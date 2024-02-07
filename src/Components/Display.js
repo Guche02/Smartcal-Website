@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import "../App.css";
-import AboutBackground from "../Assets/about-background.png";
+import BannerBackground from "../Assets/home-banner-background.png";
+import test from "../Assets/test.jpg";
 import axios from 'axios';
-
 
 const Display = () => {
   // To display user details
@@ -17,15 +17,13 @@ const Display = () => {
   };
 
   // to display predicted food items.
-  const [foodDetails, setfoodDetails] = useState({
+  const [foodDetails, setFoodDetails] = useState({
     total_calories_taken: 0,
-    class_name: '',
-    score: 0,
-    calorie: 0,
+    instances: [],
   });
 
-  const updatefoodDetails = (newfoodDetails) => {
-    setfoodDetails(newfoodDetails);
+  const updateFoodDetails = (newFoodDetails) => {
+    setFoodDetails(newFoodDetails);
   };
 
   const [showFoodDetails, setShowFoodDetails] = useState(false);
@@ -51,7 +49,7 @@ const Display = () => {
     try {
       const deviceResponse = await axios.get("http://127.0.0.1:4000/getDeviceInfo");
       console.log(deviceResponse.data);
-      updatefoodDetails(deviceResponse.data);
+      updateFoodDetails(deviceResponse.data);
       setShowFoodDetails(true); // Show food details after button click
     } catch (error) {
       console.error('Error fetching device information:', error);
@@ -59,37 +57,47 @@ const Display = () => {
   };
 
   return (
-    <div className="about-section-container">
-      <div className="about-background-image-container">
-        <img src={AboutBackground} alt="" />
-      </div>
-      <div className="about-section-text-container">
-        <p className="primary-subheading">Details</p>
-        <h1 className="primary-heading">
-          Hi {userDetails.name}
-        </h1>
-        <p className="primary-text">
-          Your calorie intake goal : {userDetails.calorie_intake_goal}
-        </p>
-        <p className="primary-text">
-          Total calories you have consumed today: {foodDetails.total_calories_taken}
-        </p>
-        <button className="secondary-button" onClick={handleUseDeviceClick}>
-          Use Device
-        </button>
-        {showFoodDetails && (
-          <div>
-            <p className="primary-text">
-              The identified food item is: {foodDetails.class_name}
-            </p>
-            <p className="primary-text">
-              The probability is : {foodDetails.score}
-            </p>
-            <p className="primary-text">
-              The calorie is : {foodDetails.calorie}
-            </p>
-          </div>
-        )}
+    <div className="home-container">
+      <div className="home-banner-container">
+        <div className="home-bannerImage-container">
+          <img src={BannerBackground} alt="" />
+        </div>
+        <div className="about-section-text-container">
+          <p className="primary-subheading">Details</p>
+          <h1 className="primary-heading">
+            Hi {userDetails.name}
+          </h1>
+          <p className="primary-text">
+            Your calorie intake goal : {userDetails.calorie_intake_goal}
+          </p>
+          <p className="primary-text">
+            Total calories you have consumed today: {foodDetails.total_calories_taken}
+          </p>
+          <button className="secondary-button" onClick={handleUseDeviceClick}>
+            Use Device
+          </button>
+          {showFoodDetails && (
+            <div>
+              <img src={test} alt="Alternate "style={{ height: '500px', width: '500px', objectFit: 'cover', display: 'block', margin: '0 auto', marginTop: '20px', marginBottom: '20px' }}  />
+              {foodDetails.instances.map((instance, index) => (
+                <div key={index}>
+                  <p className="primary-subheading">
+                    Detected food item:  {index+1}
+                  </p>
+                  <p className="primary-text">
+                    The identified food item is: {instance.class_name}
+                  </p>
+                  <p className="primary-text">
+                    The probability is : {instance.score}
+                  </p>
+                  <p className="primary-text">
+                    The calorie is : {instance.calorie}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
