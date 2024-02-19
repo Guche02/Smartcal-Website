@@ -7,11 +7,7 @@ import { FiArrowRight } from "react-icons/fi";
 // For routing inside webpage.
 import { useNavigate } from 'react-router-dom';
 
-
-
 const Home = () => {
-
-
   const navigate = useNavigate();
 
 // to handle onclicking the button.
@@ -21,6 +17,8 @@ const Home = () => {
   };
 
   return (
+    <div>
+      <Navbar />
     <div className="home-container">
       <div className="home-banner-container">
         <div className="home-bannerImage-container">
@@ -34,13 +32,14 @@ const Home = () => {
             
           </p>
           <button className="secondary-button" onClick={handleButtonClick}> 
-            Try Now! <FiArrowRight />{" "}
+            Login and Try Now! <FiArrowRight />{" "}
           </button>
         </div>
         <div className="home-image-section">
           <img src={BannerImage} alt="" />
         </div>
       </div>
+    </div>
     </div>
   );
 };

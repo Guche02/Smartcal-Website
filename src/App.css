@@ -4,6 +4,66 @@
     box-sizing: border-box;
     font-family: "Reem Kufi", sans-serif !important;
   }
+
+  
+  .display-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vh;
+  }
+  
+  .display-box {
+    padding: 40px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 80%; /* Set the width to 45% */
+    margin-bottom: 20px;
+    box-sizing: border-box;
+  }
+  
+  .display-heading {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .display-box-container {
+    justify-content: space-between;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+
+  .display-box {
+    flex: 1;
+    margin-right: 20px; /* Adjust as needed */
+  }
+  
+  .display-details {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin-left: 0px;/* Increase space between paragraphs */
+    margin-right: 0px;
+  }
+
+  .display-details p {
+    margin-bottom: 10px;
+  }
+  
+  .log-item {
+    margin-bottom: 20px;
+  }
+  
+  
+  .display-details {
+    padding: 5px;
+    font-size: 18px;
+  }
+  
   img {
     max-width: 100%;
     height: auto;
