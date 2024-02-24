@@ -1,12 +1,18 @@
-import { useNavigate } from "react-router-dom"; // Import useHistory hook to handle navigation
+import React from 'react';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const Navbar = () => {
+  const handleLogout = async () => {
+  //  Remove the token from local storage
+  localStorage.removeItem('token');
 
-  const navigate = useNavigate();
+  // Optionally, perform any additional cleanup or redirection
+  // For example, redirect the user to the login page
+  window.location.href = '/'; // Redirect to the login page
+  };
 
-  const handleClick= () => {
-    navigate('/signup')
-  }
+  const token = localStorage.getItem("token"); // Check if token exists
 
   return (
     <nav>
@@ -14,14 +20,15 @@ const Navbar = () => {
         <h1>SmartCal</h1>
       </div>
       <div className="navbar-links-container">
-        <a href="/">Home</a>
-        <a href="">About</a>
-        <button className="primary-button" onClick={handleClick} >Register now!</button>
+        <Link to="/">Home</Link>
+        {token ? (
+          <button className="primary-button" onClick={handleLogout}>Log Out</button>
+        ) : (
+          <Link to="/login">Log In</Link>
+        )}
       </div>
-      
     </nav>
   );
 };
-
 
 export default Navbar;

@@ -32,7 +32,7 @@ const Home = () => {
             
           </p>
           <button className="secondary-button" onClick={handleButtonClick}> 
-            Login and Try Now! <FiArrowRight />{" "}
+            Register Now!<FiArrowRight />{" "}
           </button>
         </div>
         <div className="home-image-section">
