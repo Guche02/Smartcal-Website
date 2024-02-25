@@ -10,6 +10,7 @@ const Display = () => {
     total_calories_taken: 0,
     instances: [],
   });
+  const [visualizedImage, setVisualizedImage] = useState(null); // State to store the visualized image data
   const [imageData, setImageData] = useState(null);
   const [editingDetails, setEditingDetails] = useState(false);
   const [updatedDetails, setUpdatedDetails] = useState({
@@ -81,6 +82,7 @@ const Display = () => {
       console.log(response.data)
       setFoodDetails(response.data);
       setShowFoodDetails(true);
+      setVisualizedImage(response.data.visualized_image);
       const userDetailsResponse = await axios.get("http://127.0.0.1:4000/getUserDetails", config);
       setUserDetails(userDetailsResponse.data);
     } catch (error) {
@@ -196,6 +198,7 @@ const Display = () => {
         {showFoodDetails && (
           <div className="about-section-text-container">
             <h1>Detected Food Instances</h1>
+            <img src={`data:image/png;base64,${visualizedImage}`} alt="Visualized Image" style={{ maxWidth: "400px", maxHeight: "500px" }}/>
             <div className='display-box-container' >
               {foodDetails.instances && foodDetails.instances.map((instance, index) => (
                 <div key={index} className="display-box">
