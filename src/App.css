@@ -5,6 +5,14 @@
     font-family: "Reem Kufi", sans-serif !important;
   }
 
+  .error-message {
+    color:red ;
+  }
+
+  .input-container {
+    display: flex;
+    gap: 10px;
+  }
   
   .display-container {
     display: flex;
@@ -50,7 +58,7 @@
     margin-right: 0px;
   }
 
-  .display-details p {
+  .display-details p, input {
     margin-bottom: 10px;
   }
   
@@ -63,6 +71,7 @@
     padding: 5px;
     font-size: 18px;
   }
+
   
   img {
     max-width: 100%;

@@ -11,13 +11,19 @@ const Display = () => {
     instances: [],
   });
   const [imageData, setImageData] = useState(null);
+  const [editingDetails, setEditingDetails] = useState(false);
+  const [updatedDetails, setUpdatedDetails] = useState({
+    name: '',
+    age: '',
+    weight: '',
+    height: '',
+    calorieGoalPerDay: '',
+  });
 
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        // Retrieve token from local storage
         const token = localStorage.getItem('token');
-        // Include token in the request headers
         const config = {
           headers: {
             Authorization: `Bearer ${token}`
@@ -42,32 +48,41 @@ const Display = () => {
   }, [userDetails]);
 
   // Function to update user details
-  const updateDetails = (newDetails) => {
-    setUserDetails(newDetails);
-  };
-
-  const handleUseDeviceClick = async () => {
+  const updateDetails = async () => {
     try {
-      // Construct query parameters
-      const queryParams = new URLSearchParams({
-        dateTime: new Date().toISOString() // Assuming current date-time
-      });
-      // Fetch user details again to update the daily logs
       const token = localStorage.getItem('token');
       const config = {
         headers: {
           Authorization: `Bearer ${token}`
         }
       };
-      // Construct the URL with query parameters
+      await axios.post("http://127.0.0.1:4000/updatedetails", updatedDetails, config);
+      setEditingDetails(false);
+      const response = await axios.get("http://127.0.0.1:4000/getUserDetails", config);
+      setUserDetails(response.data);
+    } catch (error) {
+      console.error('Error updating user details:', error);
+    }
+  };
+
+  const handleUseDeviceClick = async () => {
+    try {
+      const queryParams = new URLSearchParams({
+        dateTime: new Date().toISOString()
+      });
+      const token = localStorage.getItem('token');
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      };
       const url = `http://127.0.0.1:4000/getDeviceInfo?${queryParams}`;
       const response = await axios.get(url, config);
       console.log(response.data)
       setFoodDetails(response.data);
       setShowFoodDetails(true);
-      // Fetch user details again to update the daily logs
       const userDetailsResponse = await axios.get("http://127.0.0.1:4000/getUserDetails", config);
-      updateDetails(userDetailsResponse.data);
+      setUserDetails(userDetailsResponse.data);
     } catch (error) {
       console.error('Error fetching device information:', error);
     }
@@ -75,13 +90,9 @@ const Display = () => {
 
   const GetImage = async () => {
     try {
-      // Reload the page to ensure a fresh start
-      // Fetch the image from the server
       const imageResponse = await axios.get("http://127.0.0.1:4000/getImage", { responseType: 'blob' });
-      // Read the image data as a data URL
       const reader = new FileReader();
       reader.onload = () => {
-        // Set the image data to be displayed in the component
         setImageData(reader.result);
       };
       reader.readAsDataURL(imageResponse.data);
@@ -93,20 +104,25 @@ const Display = () => {
   };
 
   const handleImageConfirmation = () => {
-    // If the image is confirmed, trigger the handleUseDeviceClick function
     console.log("User accepted the image.")
     handleUseDeviceClick();
     setImageData(null); // Clear the image data
   };
 
   const handleImageRejection = async () => {
-    // Handle when the user denies the image
     console.log("User denied the image.");
     setImageData(null); // Clear the image data
     alert("Click a new image to try again.");
     await axios.delete("http://127.0.0.1:4000/deleteImage");
   };
 
+  const handleUpdateDetails = () => {
+    setEditingDetails(true);
+  };
+
+  const handleInputChange = (e) => {
+    setUpdatedDetails({ ...updatedDetails, [e.target.name]: e.target.value });
+  };
   return (
     <div className="home-container">
       <Navbar />
@@ -115,10 +131,34 @@ const Display = () => {
           <div className="display-box">
             <h1 className="display-heading">User Details</h1>
             <div className="display-details">
-              <p>Name: {userDetails.name}</p>
-              <p>Age: {userDetails.age}</p>
-              <p>Body Mass Index(BMI): {bmi}</p>
-              <p><strong>Calorie Goal Per Day:</strong> {userDetails.calorieGoalPerDay}</p>
+              {editingDetails ? (
+                <>
+                <div className="input-container">
+                  <input type="text" name="name" placeholder="Name" value={updatedDetails.name} onChange={handleInputChange} />
+                </div>
+                <div className="input-container">
+                  <input type="text" name="age" placeholder="Age" value={updatedDetails.age} onChange={handleInputChange} />
+                </div>
+                <div className="input-container">
+                  <input type="text" name="weight" placeholder="Weight" value={updatedDetails.weight} onChange={handleInputChange} />
+                </div>
+                <div className="input-container">
+                  <input type="text" name="height" placeholder="Height" value={updatedDetails.height} onChange={handleInputChange} />
+                </div>
+                <div className="input-container">
+                  <input type="text" name="calorieGoalPerDay" placeholder="Calorie Goal Per Day" value={updatedDetails.calorieGoalPerDay} onChange={handleInputChange} />
+                </div>
+                <button onClick={updateDetails}>Save</button>
+              </>
+              ) : (
+                <>
+                  <p>Name: {userDetails.name}</p>
+                  <p>Age: {userDetails.age}</p>
+                  <p>Body Mass Index(BMI): {bmi}</p>
+                  <p><strong>Calorie Goal Per Day:</strong> {userDetails.calorieGoalPerDay}</p>
+                  <button classname='secondary-button' onClick={handleUpdateDetails}>Update Info</button>
+                </>
+              )}
             </div>
           </div>
           <div className="display-box">
