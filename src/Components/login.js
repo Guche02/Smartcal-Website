@@ -30,7 +30,7 @@ const Login = () => {
 
         try {
             // Make a POST request to the server with login data
-            const response = await axios.post("http://127.0.0.1:4000/login", formData);
+            const response = await axios.post("http://127.0.0.1:4000/user/login", formData);
 
             // Log the response from the server
             console.log('Server Response:', response.data);

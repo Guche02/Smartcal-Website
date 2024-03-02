@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from "./Navbar";
+
 
 const Display = () => {
   const [errors, setErrors] = useState({});
@@ -31,7 +33,7 @@ const Display = () => {
             Authorization: `Bearer ${token}`
           }
         };
-        const response = await axios.get("http://127.0.0.1:4000/getUserDetails", config);
+        const response = await axios.get("http://127.0.0.1:4000/user/getUserDetails", config);
         setUserDetails(response.data);
       } catch (error) {
         console.error('Error fetching user details:', error);
@@ -87,9 +89,9 @@ const Display = () => {
           Authorization: `Bearer ${token}`
         }
       };
-      await axios.post("http://127.0.0.1:4000/updatedetails", updatedDetails, config);
+      await axios.post("http://127.0.0.1:4000/user/updatedetails", updatedDetails, config);
       setEditingDetails(false);
-      const response = await axios.get("http://127.0.0.1:4000/getUserDetails", config);
+      const response = await axios.get("http://127.0.0.1:4000/user/getUserDetails", config);
       setUserDetails(response.data);
     } catch (error) {
       console.error('Error updating user details:', error);
@@ -107,13 +109,13 @@ const Display = () => {
           Authorization: `Bearer ${token}`
         }
       };
-      const url = `http://127.0.0.1:4000/getDeviceInfo?${queryParams}`;
+      const url = `http://127.0.0.1:4000/device/getDeviceInfo?${queryParams}`;
       const response = await axios.get(url, config);
       console.log(response.data)
       setFoodDetails(response.data);
       setShowFoodDetails(true);
       setVisualizedImage(response.data.visualized_image);
-      const userDetailsResponse = await axios.get("http://127.0.0.1:4000/getUserDetails", config);
+      const userDetailsResponse = await axios.get("http://127.0.0.1:4000/user/getUserDetails", config);
       setUserDetails(userDetailsResponse.data);
     } catch (error) {
       console.error('Error fetching device information:', error);
@@ -122,16 +124,16 @@ const Display = () => {
 
   const GetImage = async () => {
     try {
-      const imageResponse = await axios.get("http://127.0.0.1:4000/getImage", { responseType: 'blob' });
+      const imageResponse = await axios.get("http://127.0.0.1:4000/device/getImage", { responseType: 'blob' });
       const reader = new FileReader();
       reader.onload = () => {
         setImageData(reader.result);
       };
       reader.readAsDataURL(imageResponse.data);
     } catch (error) {
-      alert("Click a new image to try again.")
-      window.location.reload()
-      console.error('Error fetching image:', error);
+      alert("No images found. Please try again.");
+      // Clear the image data from the component state
+      setImageData(null);
     }
   };
 
@@ -145,7 +147,7 @@ const Display = () => {
     console.log("User denied the image.");
     setImageData(null); // Clear the image data
     alert("Click a new image to try again.");
-    await axios.delete("http://127.0.0.1:4000/deleteImage");
+    await axios.delete("http://127.0.0.1:4000/device/deleteImage");
   };
 
   const handleUpdateDetails = () => {
@@ -166,7 +168,6 @@ const Display = () => {
   const isFormValid = () => {
     return Object.values(updatedDetails).every(value => value.trim() !== ''); // Check if all field values are not empty
   };
-
 
   return (
     <div className="home-container">
@@ -214,7 +215,7 @@ const Display = () => {
           <div className="display-box">
             <h1 className="display-heading">Daily Logs</h1>
             <div className="display-details">
-              {userDetails.dailyLogs && userDetails.dailyLogs.map((log, index) => (
+              {userDetails.dailyLogs && userDetails.dailyLogs.slice(0,3).map((log, index) => (
                 <div key={index} className="log-item">
                   <p><strong>Date:</strong> {new Date(log.day).toLocaleDateString()}</p>
                   <p><strong>Total Calories:</strong> {log.totalCalories}</p>

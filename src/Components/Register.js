@@ -49,15 +49,23 @@ const Registration = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Check if there's an email error before submitting
-        if (emailError) {
-            console.error('Invalid email address');
+        // Check if there are any errors
+        const inputErrors = Object.values(errors).filter(error => error !== '');
+        if (inputErrors.length > 0 || emailError !== '') {
+            console.error('Invalid input');
             return;
         }
-    
+
+        // Check if all fields are filled
+        const formValues = Object.values(formData);
+        if (formValues.some(value => value.trim() === '')) {
+            console.error('All fields are required');
+            return;
+        }
+
         try {
             // Make a POST request to the server with registration data
-            const response = await axios.post("http://127.0.0.1:4000/register", formData);
+            const response = await axios.post("http://127.0.0.1:4000/user/register", formData);
             
             console.log(response.data)
             
