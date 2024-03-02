@@ -42,11 +42,7 @@ const Login = () => {
 
                 // Redirect to the user details page
                 navigate('/display');
-            } else {
-                // Handle login failure, e.g., display an error message
-                console.error('Login failed:', response.data.error);
-            }
-
+            } 
             // Reset the form after submission
             setFormData({
                 email: '',
@@ -54,6 +50,7 @@ const Login = () => {
             });
         } catch (error) {
             console.error('Error submitting login data:', error);
+            alert("Invalid Email or Password!")
         }
     };
 

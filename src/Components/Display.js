@@ -3,6 +3,7 @@ import axios from 'axios';
 import Navbar from "./Navbar";
 
 const Display = () => {
+  const [errors, setErrors] = useState({});
   const [userDetails, setUserDetails] = useState({});
   const [bmi, setBMI] = useState(null);
   const [showFoodDetails, setShowFoodDetails] = useState(false);
@@ -48,9 +49,38 @@ const Display = () => {
     }
   }, [userDetails]);
 
+
   // Function to update user details
   const updateDetails = async () => {
     try {
+      let errors = {};
+      // Validation for age
+      let error = '';
+      if (updatedDetails.age) {
+        error = updatedDetails.age < 18 || updatedDetails.age > 100 ? 'Range 10-100' : '';
+        errors = { ...errors, age: error };
+      }
+      // Validation for weight
+      if (updatedDetails.weight) {
+        error = updatedDetails.weight < 25 || updatedDetails.weight > 300 ? 'Range 15-300' : '';
+        errors = { ...errors, weight: error };
+      }
+      // Validation for height
+      if (updatedDetails.height) {
+        error = updatedDetails.height <= 100 || updatedDetails.height > 250 ? 'Range 100-250' : '';
+        errors = { ...errors, height: error };
+      }
+      // Validation for calorie goal per day
+      if (updatedDetails.calorieGoalPerDay) {
+        error = updatedDetails.calorieGoalPerDay <= 250 || updatedDetails.calorieGoalPerDay > 4000 ? 'Calorie goal must be between 250 and 4000 kcal' : '';
+        errors = { ...errors, calorieGoalPerDay: error };
+      }
+      // If there are errors, stop the update process
+      if (Object.values(errors).some(error => error !== '')) {
+        setErrors(errors);
+        return;
+      }
+
       const token = localStorage.getItem('token');
       const config = {
         headers: {
@@ -125,6 +155,19 @@ const Display = () => {
   const handleInputChange = (e) => {
     setUpdatedDetails({ ...updatedDetails, [e.target.name]: e.target.value });
   };
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault(); // Prevent default form submission behavior
+    if (isFormValid()) {
+      updateDetails();
+    }
+  };
+
+  const isFormValid = () => {
+    return Object.values(updatedDetails).every(value => value.trim() !== ''); // Check if all field values are not empty
+  };
+
+
   return (
     <div className="home-container">
       <Navbar />
@@ -134,31 +177,36 @@ const Display = () => {
             <h1 className="display-heading">User Details</h1>
             <div className="display-details">
               {editingDetails ? (
-                <>
-                <div className="input-container">
-                  <input type="text" name="name" placeholder="Name" value={updatedDetails.name} onChange={handleInputChange} />
-                </div>
-                <div className="input-container">
-                  <input type="text" name="age" placeholder="Age" value={updatedDetails.age} onChange={handleInputChange} />
-                </div>
-                <div className="input-container">
-                  <input type="text" name="weight" placeholder="Weight" value={updatedDetails.weight} onChange={handleInputChange} />
-                </div>
-                <div className="input-container">
-                  <input type="text" name="height" placeholder="Height" value={updatedDetails.height} onChange={handleInputChange} />
-                </div>
-                <div className="input-container">
-                  <input type="text" name="calorieGoalPerDay" placeholder="Calorie Goal Per Day" value={updatedDetails.calorieGoalPerDay} onChange={handleInputChange} />
-                </div>
-                <button onClick={updateDetails}>Save</button>
-              </>
+                <form onSubmit={handleFormSubmit}>
+                  <div className="input-container">
+                    <input type="text" name="name" placeholder="Name" value={updatedDetails.name} onChange={handleInputChange} required  autoComplete='off'/>
+                  </div>
+                  <div className="input-container">
+                    <input type="number" name="age" placeholder="Age" value={updatedDetails.age} onChange={handleInputChange} required autoComplete='off' />
+                    {errors.age && <p className="error-message">{errors.age}</p>}
+                  </div>
+                  <div className="input-container">
+                    <input type="number" name="weight" placeholder="Weight" value={updatedDetails.weight} onChange={handleInputChange} required autoComplete='off' />
+                    {errors.weight && <p className="error-message">{errors.weight}</p>}
+                  </div>
+                  <div className="input-container">
+                    <input type="number" name="height" placeholder="Height" value={updatedDetails.height} onChange={handleInputChange} required autoComplete='off'/>
+                    {errors.height && <p className="error-message">{errors.height}</p>}
+                  </div>
+                  <div className="input-container">
+                    <input type="number" name="calorieGoalPerDay" placeholder="Calorie Goal Per Day" value={updatedDetails.calorieGoalPerDay} onChange={handleInputChange} required autoComplete='off'/>
+                    {errors.calorieGoalPerDay && <p className="error-message">{errors.calorieGoalPerDay}</p>}
+                  </div>
+                  <button type="submit" disabled={!isFormValid()}>Save</button>
+                </form>
+
               ) : (
                 <>
                   <p>Name: {userDetails.name}</p>
                   <p>Age: {userDetails.age}</p>
                   <p>Body Mass Index(BMI): {bmi}</p>
                   <p><strong>Calorie Goal Per Day:</strong> {userDetails.calorieGoalPerDay}</p>
-                  <button classname='secondary-button' onClick={handleUpdateDetails}>Update Info</button>
+                  <button onClick={handleUpdateDetails}>Update Info</button>
                 </>
               )}
             </div>
@@ -198,7 +246,7 @@ const Display = () => {
         {showFoodDetails && (
           <div className="about-section-text-container">
             <h1>Detected Food Instances</h1>
-            <img src={`data:image/png;base64,${visualizedImage}`} alt="Visualized Image" style={{ maxWidth: "400px", maxHeight: "500px" }}/>
+            <img src={`data:image/png;base64,${visualizedImage}`} alt="Visualized Image" style={{ maxWidth: "400px", maxHeight: "500px" }} />
             <div className='display-box-container' >
               {foodDetails.instances && foodDetails.instances.map((instance, index) => (
                 <div key={index} className="display-box">
@@ -215,5 +263,6 @@ const Display = () => {
       </div>
     </div>
   );
-};
+}
+
 export default Display;

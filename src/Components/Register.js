@@ -3,6 +3,7 @@ import axios from 'axios';
 import Navbar from "./Navbar";
 import { useNavigate, Link } from 'react-router-dom';
 
+
 const Registration = () => {
     const [formData, setFormData] = useState({
         name: '',
@@ -30,9 +31,9 @@ const Registration = () => {
         }
         let error = '';
         if (name === 'age') {
-            error = value < 18 || value > 100 ? 'Age must be between 18 and 100' : '';
+            error = value < 10 || value > 100 ? 'Age must be between 10 and 100' : '';
         } else if (name === 'weight') {
-            error = value < 25 || value > 300 ? 'Weight must be between 25 and 300 kg' : '';
+            error = value < 15 || value > 300 ? 'Weight must be between 15 and 300 kg' : '';
         } else if (name === 'height') {
             error = value <= 100 || value > 250 ? 'Height must be between 100 and 250 cm' : '';
         } else if (name === 'calorieGoalPerDay') {
@@ -53,11 +54,17 @@ const Registration = () => {
             console.error('Invalid email address');
             return;
         }
-
+    
         try {
             // Make a POST request to the server with registration data
             const response = await axios.post("http://127.0.0.1:4000/register", formData);
-
+            
+            console.log(response.data)
+            
+            if(!response.data.success) {
+                alert(`Error: ${response.data.error}`)
+            }
+           else {
             // Log the response from the server
             console.log('Server Response:', response.data);
 
@@ -74,7 +81,8 @@ const Registration = () => {
 
             // Redirect to the display page
             navigate('/login');
-        } catch (error) {
+        }
+            } catch (error) {
             console.error('Error submitting registration data:', error);
         }
     };
@@ -178,7 +186,9 @@ const Registration = () => {
                 </div>
                 <button type="submit" className='secondary-button'>Register</button>
             </form>
-            <p>Already have an account? <Link to="/login">Login</Link></p>
+
+            <h3>Already have an account? <Link to="/login">Login</Link></h3>
+
         </div>
     );
 };
